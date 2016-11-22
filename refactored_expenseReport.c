@@ -129,4 +129,6 @@ int main(void) {
   test_TwoMealsAndCarRental();
   printf("> Test Overages\n");
   test_Overages();
+	
+	return 0;
 }
