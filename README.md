@@ -1,2 +1,2 @@
 # tdd_expenseReport
-TDD using Uncle Bob's expenseReport example for refactoring in C with no framework
+Kata using Uncle Bob's expenseReport Java example for refactoring in C with no TDD framework
