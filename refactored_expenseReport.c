@@ -3,11 +3,9 @@
 
 #define max_no_of_items 10
 #define max_char_on_report 200
-#define max_no_of_type 3
 
-const char* typeName[max_no_of_type] = {"Dinner    ", "Breakfast ", "Car Rental"};
-
-typedef enum {DINNER, BREAKFAST, CAR_RENTAL} Type;
+typedef enum {DINNER, BREAKFAST, CAR_RENTAL, MAX_NO_TYPE} Type;
+const char* typeName[MAX_NO_TYPE] = {"Dinner    ", "Breakfast ", "Car Rental"};
 
 typedef struct {
   Type type;
