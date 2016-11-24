@@ -1,135 +1,150 @@
 #include <iostream>
-#include <stdio.h>
-#include <stdbool.h>
+#include <cstdio>
+using namespace std;
 
-#define max_no_of_items 10
-#define max_char_on_report 200
+class ReportPrinter {
+public:
+	void print(string text) {};
+};
 
-typedef enum {DINNER, BREAKFAST, CAR_RENTAL, MAX_NO_TYPE} Type;
-const char* typeName[MAX_NO_TYPE] = {"Dinner    ", "Breakfast ", "Car Rental"};
+class MockReportPrinter{
+private:
+  string printedText;
+public: 
+  void print(string text) {
+		printedText += text;
+		//cout << printedText;
+	}
+	string getText() {
+		return printedText;
+	}
+};
 
-typedef struct {
-  Type type;
-  int amount;
-} Expense;
+class Expense {
+private:
+	int amount;
+public:
+	Expense(int amount) {
+		this->amount = amount;
+	}
+  int getAmount() { return amount; }
+	virtual bool isOverage();
+	virtual bool isMeal();
+};
 
-Expense expenses[max_no_of_items];
-char number_of_expenses = 0;
+class CarRentalExpense: public Expense {
+public:
+  CarRentalExpense(int amount): Expense(amount) {};
+	bool isOverage() { return false; }
+	bool isMeal() {	return false; }
+};
+class DinnerExpense: public Expense {
+public:
+  DinnerExpense(int amount): Expense(amount) {};
+	bool isOverage() { getAmount()>5000 ? true:false; }
+	bool isMeal() {	return true; }
+};
+class BreakfastExpense: public Expense {
+public:
+  BreakfastExpense(int amount): Expense(amount) {};
+	bool isOverage() { getAmount()>1000 ? true:false; }
+	bool isMeal() {	return true; }
+};
 
-void addExpense(Expense expense) {
-  expenses[number_of_expenses].amount = expense.amount;
-  expenses[number_of_expenses].type = expense.type;
-  number_of_expenses++;
-}
+class ExpenseReport {
+    //List<Expense> expenses = new ArrayList<Expense>();
+private:
+    int total;
+    int mealExpenses;
 
-void printer(char* text) {
-  printf("%s",text);
-}
+public:
+	ExpenseReport() {
+		total = 0;
+		mealExpenses = 0;			
+	}
 
-std::string getDate() {
-  return (std::string)"9/12/2002";
-}
+    void totalUpExpenses() {
+//        for (Expense expense : expenses) addTotals(expense);
+    }
 
-float centsToDollar(int cents) {
-  return cents/100.0;
-}
+	void addTotals(Expense expense) {
+		if (expense.isMeal()) mealExpenses += expense.getAmount();
+			total += expense.getAmount();
+	}
 
-std::string printReportHeader(){
-//  return sprintf(text, "%s %s %s", "Expenses",getDate(),"\n");
-  std::string title = "Expenses ";
-  return title+getDate();
-}
+    void addExpense(Expense expense) {
+//        expenses.add(expense);
+    }
+		
+	int getTotals() { return total;	}
+	int getMealExpenses() { return mealExpenses;	}
+};
 
-bool isMealExpense(Expense expense) {
-  return (expense.type==BREAKFAST || expense.type==DINNER)? true:false;
-}
+class ExpenseReporter {
+private:
+	ExpenseReport expenseReport;
+//    private final ExpenseNamer expenseNamer = new ExpenseReportNamer();
+  MockReportPrinter printer;
+  void printExpensesAndTotals() {
+		printHeader();
+		printExpenses();
+		printTotals();
+	}
 
-bool isOverages(Expense expense) {
- return (expense.type==DINNER && expense.amount > 5000) || 
-        (expense.type==BREAKFAST && expense.amount > 1000);
-}
-int printReportItems(char* text, Expense expense) {
-  return sprintf(text, "%s\t%s\t$%.02f\n", isOverages(expense) ? "x":" ",
-    typeName[expense.type], centsToDollar(expense.amount));
-}
+	void printExpenses() {
+//		for (Expense expense : expenseReport.expenses)	printExpense(expense);
+	}
 
-int printReportMealExpenses(char* text, int mealExpenses) {
-  return sprintf(text,"\nMeal expenses $%.02f", centsToDollar(mealExpenses));
-}
+	void printExpense(Expense expense) {
+//		printer.print(string.format("%s\t%s\t$%.02f\n",
+//						expense.isOverage() ? "X" : " ",
+//						expenseNamer.getName(expense), penniesToDollars(expense.amount)));
+	}
 
-int printReportTotal(char* text, int total) {
-  return sprintf(text, "\nTotal $%.02f\n", centsToDollar(total));
-}
+	void printTotals() {
+ 		char buffer[50];
+		sprintf(buffer,"\nMeal expenses $%.02f", penniesToDollars(expenseReport.getMealExpenses()));
+		printer.print(buffer);
+		sprintf(buffer,"\nTotal $%.02f", penniesToDollars(expenseReport.getTotals()));
+		printer.print(buffer);
+ 	}
 
-void printReport() {
-  int total=0;
-  int mealExpenses=0;
-  char text[max_char_on_report];
-  int text_char_number=0;
+	void printHeader() {
+		printer.print("Expenses " + getDate() + "\n");
+	}
 
-  std::cout << printReportHeader() <<std::endl;
+	double penniesToDollars(int amount) {
+		return amount / 100.0;
+	}
 
-  int loop;
-  for (loop=0; loop<number_of_expenses;loop++) {
-    if (isMealExpense(expenses[loop])) mealExpenses += expenses[loop].amount;
-
-    text_char_number += printReportItems(text+text_char_number, expenses[loop]);
-
-    total += expenses[loop].amount; 
+  string getDate() {
+		return "9/12/2002";
   }
-  
-  text_char_number += printReportMealExpenses(text+text_char_number, mealExpenses);
-  text_char_number += printReportTotal(text+text_char_number, total);
 
-  printer(text);
-}
+public:
+  ExpenseReporter() {
 
-void test_Empty() {
-  number_of_expenses = 0;
-  printReport();
-}
+	}
 
-void test_OneDinner() {
-  number_of_expenses = 0;
-  addExpense((Expense){DINNER,1678});
-  printReport();
-}
+  void printReport(MockReportPrinter printer) {
+		this->printer = printer;
+		expenseReport.totalUpExpenses();
+		printExpensesAndTotals();
+  	cout << this->printer.getText();
+	}
 
-void test_TwoMeals() {
-  number_of_expenses = 0;
-  addExpense((Expense){DINNER,1000});
-  addExpense((Expense){BREAKFAST,500});
-  printReport();
-}
-
-void test_TwoMealsAndCarRental() {
-  number_of_expenses = 0;
-  addExpense((Expense){DINNER,1000});
-  addExpense((Expense){BREAKFAST,500});
-  addExpense((Expense){CAR_RENTAL,50000});
-  printReport();
-}
-
-void test_Overages() {
-  number_of_expenses = 0;
-  addExpense((Expense){BREAKFAST,1000});
-  addExpense((Expense){BREAKFAST,1001});
-  addExpense((Expense){DINNER,5000});
-  addExpense((Expense){DINNER,5001});
-  printReport();
-}
+  void addExpense(Expense expense) {
+    expenseReport.addExpense(expense);
+  }	
+	
+};
 
 int main(void) {
-  printf("> Test Empty List\n");
-  test_Empty();
-  printf("> Test One Dinner\n");
-  test_OneDinner();
-  printf("> Test Two Meals\n");
-  test_TwoMeals();
-  printf("> Test Two Meals and Car Rental\n");
-  test_TwoMealsAndCarRental();
-  printf("> Test Overages\n");
-  test_Overages();
+	MockReportPrinter printer;
+	ExpenseReporter report;
+	
+	report.printReport(printer);
+
 	
   return 0;
 }
